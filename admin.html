@@ -4,28 +4,124 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Campus Map Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --canopy: #0B3B24; --line: #d9d6c8; --paper: #faf8f0; --ink: #1d1d1b; --soft: #6b6b63; --red: #b3261e; }
+  :root {
+    --canopy: #0f4129; --canopy-2: #1d5a3b; --line: #dfe3dc; --paper: #f4f6f3;
+    --ink: #17231c; --soft: #667169; --red: #b3261e;
+  }
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; background: var(--paper); color: var(--ink); }
-  header { background: var(--canopy); color: #fff; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-  header h1 { font-size: 1.05rem; margin: 0; }
-  header button { background: transparent; color: #fff; border: 1px solid #fff8; border-radius: 4px; padding: 5px 10px; cursor: pointer; }
-  main { max-width: 900px; margin: 0 auto; padding: 16px; }
-  .card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
-  #login { max-width: 360px; margin: 40px auto; }
-  #login h2 { margin-top: 0; }
-  label { display: block; font-size: .8rem; color: var(--soft); margin-top: 10px; }
-  input, select { width: 100%; padding: 9px 10px; font-size: 16px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
-  button.primary { background: var(--canopy); color: #fff; border: none; border-radius: 6px; padding: 10px 14px; font-size: .9rem; cursor: pointer; }
+  html, body { margin: 0; }
+  body { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; }
+  [hidden] { display: none !important; }
+  .ico { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+  /* ================= SIGN IN PAGE ================= */
+  #login {
+    position: relative; min-height: 100vh; overflow: hidden;
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 32px;
+    padding: 40px clamp(20px, 6vw, 96px);
+    background: radial-gradient(circle at 12% 18%, #e9eee9 0, #f8faf8 48%, #ffffff 100%);
+  }
+  .deco { position: absolute; pointer-events: none; border-radius: 28px; z-index: 0; }
+  /* Corner shapes are mirrored left/right so all four corners carry the same weight. */
+  /* top-right / top-left: dark slanted tab */
+  .d1 { top: -64px; right: 90px; width: 190px; height: 140px; background: linear-gradient(135deg, #0f4129, #2a6e4a); transform: skewX(-35deg); }
+  .d7 { top: -64px; left: 90px; width: 190px; height: 140px; background: linear-gradient(225deg, #0f4129, #2a6e4a); transform: skewX(35deg); }
+  /* bottom-right / bottom-left: big dark diagonal + a second band beside it */
+  .d2 { bottom: -150px; right: -110px; width: 380px; height: 300px; background: linear-gradient(135deg, #1d5a3b, #0b3322); transform: rotate(-38deg); }
+  .d5 { bottom: -150px; left: -110px; width: 380px; height: 300px; background: linear-gradient(225deg, #1d5a3b, #0b3322); transform: rotate(38deg); }
+  .d3 { bottom: -170px; right: 120px; width: 220px; height: 300px; background: linear-gradient(135deg, #0f4129, #1d5a3b); transform: rotate(-38deg); opacity: .92; }
+  .d6 { bottom: -170px; left: 120px; width: 220px; height: 300px; background: linear-gradient(225deg, #0f4129, #1d5a3b); transform: rotate(38deg); opacity: .92; }
+  /* soft light-green accents on both sides */
+  .d4 { left: -50px; top: 26%; width: 110px; height: 190px; background: #c9d6cc; opacity: .7; transform: skewY(-24deg); }
+  .d8 { right: -50px; top: 26%; width: 110px; height: 190px; background: #c9d6cc; opacity: .7; transform: skewY(24deg); }
+
+  .brand { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .lockup { display: flex; align-items: center; gap: 22px; text-align: left; }
+  .lockup img { width: 118px; height: 118px; object-fit: contain; flex: none; }
+  .wordmark { color: var(--canopy); line-height: 1.05; }
+  .wordmark b { display: block; font-size: 3rem; font-weight: 800; letter-spacing: .02em; }
+  .wordmark .u { display: block; font-size: 1.75rem; font-weight: 700; margin-top: 2px; }
+  .wordmark .c { display: block; font-size: 1.15rem; font-weight: 500; letter-spacing: .38em; margin-top: 8px; color: #28503c; }
+  .brand hr { width: min(380px, 80%); border: none; border-top: 1px solid #cfd7d0; margin: 34px 0 30px; }
+  .brand h2 { margin: 0; font-size: 1.9rem; font-weight: 700; color: var(--canopy); }
+  .brand p { margin: 12px 0 0; color: #3e4a43; font-size: 1.05rem; }
+  .features { display: flex; align-items: stretch; margin-top: 46px; }
+  .feature { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 4px 28px; font-size: .95rem; line-height: 1.25; color: #4a564f; text-align: center; }
+  .feature + .feature { border-left: 1px solid #cdd5ce; }
+  .feature .ico { width: 36px; height: 36px; color: #3d4d44; stroke-width: 1.5; }
+
+  .login-card {
+    position: relative; z-index: 1; width: 100%; max-width: 650px; justify-self: center;
+    background: #fff; border-radius: 14px; padding: 48px 50px 52px;
+    box-shadow: 0 18px 50px rgba(15, 65, 41, .13), 0 2px 8px rgba(0, 0, 0, .05);
+  }
+  .ttl { display: flex; align-items: center; gap: 18px; }
+  .ttl .bar { width: 6px; height: 40px; border-radius: 3px; background: var(--canopy); flex: none; }
+  .ttl h1 { margin: 0; font-size: 2rem; font-weight: 700; color: var(--canopy); }
+  .sub { margin: 10px 0 0 24px; color: var(--soft); font-size: .98rem; }
+  #login-form { margin-top: 34px; }
+  #login-form label { display: flex; align-items: center; gap: 12px; margin: 22px 0 10px; font-size: 1rem; font-weight: 500; color: #26332b; }
+  #login-form label .ico { width: 24px; height: 24px; }
+  #login-form input {
+    width: 100%; height: 56px; padding: 0 18px; font: inherit; font-size: 1rem; color: var(--ink);
+    border: 1px solid #dde2dd; border-radius: 9px; background: #fff; outline: none;
+  }
+  #login-form input::placeholder { color: #a0a9a3; }
+  #login-form input:focus { border-color: var(--canopy); box-shadow: 0 0 0 3px rgba(15, 65, 41, .12); }
+  .pw { position: relative; }
+  .pw input { padding-right: 56px; }
+  #toggle-pw { position: absolute; top: 0; right: 0; width: 56px; height: 56px; border: none; background: transparent; color: #55625a; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  #toggle-pw .eye-open { display: none; }
+  #toggle-pw.on .eye-open { display: block; }
+  #toggle-pw.on .eye-closed { display: none; }
+  .err { color: var(--red); font-size: .88rem; line-height: 1.4; min-height: 1.3em; margin-top: 14px; }
+  .signin {
+    width: 100%; height: 60px; margin-top: 16px; border: none; border-radius: 9px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    font: inherit; font-size: 1.12rem; font-weight: 700; color: #fff;
+    background: linear-gradient(180deg, #1d5a3b, #0f4129); box-shadow: 0 6px 16px rgba(15, 65, 41, .25);
+  }
+  .signin:hover { filter: brightness(1.08); }
+  .signin:disabled { opacity: .65; cursor: default; }
+
+  /* ================= ADMIN BOARD ================= */
+  /* The Araullo seal sits behind everything as a faint see-through design. */
+  .watermark, .admin-deco { display: none; position: fixed; pointer-events: none; z-index: 0; }
+  body.in-admin .watermark, body.in-admin .admin-deco { display: block; }
+  .watermark {
+    inset: 0; opacity: .1;
+    background: url('images/araullo-seal.png') no-repeat center 56% / min(74vmin, 660px);
+  }
+  .admin-deco { border-radius: 28px; background: linear-gradient(135deg, #1d5a3b, #0b3322); opacity: .92; }
+  .a1 { bottom: -110px; left: -80px; width: 280px; height: 170px; transform: skewX(-35deg); }
+  .a2 { bottom: -120px; right: -60px; width: 250px; height: 160px; transform: skewX(35deg); }
+
+  #topbar, #app { position: relative; z-index: 1; }
+  #topbar { background: var(--canopy); color: #fff; padding: 10px 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .brandbar { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .brandbar img { width: 38px; height: 38px; object-fit: contain; background: #fff; border-radius: 50%; padding: 2px; flex: none; }
+  .brandbar h1 { font-size: 1.05rem; margin: 0; font-weight: 700; white-space: nowrap; }
+  .userbox { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  #who { font-size: .8rem; opacity: .9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #logout { background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, .55); border-radius: 6px; padding: 6px 12px; cursor: pointer; font: inherit; font-size: .82rem; }
+  #app { max-width: 920px; margin: 0 auto; padding: 18px 16px 90px; }
+  .card { background: rgba(255, 255, 255, .9); border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: 0 4px 18px rgba(15, 65, 41, .06); }
+  .admin-input, .filters input, .filters select, .row input, .row select, .blocked-row input {
+    width: 100%; padding: 9px 10px; font: inherit; font-size: 16px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink);
+  }
+  button.primary { background: var(--canopy); color: #fff; border: none; border-radius: 8px; padding: 10px 14px; font: inherit; font-size: .9rem; font-weight: 600; cursor: pointer; }
   button.primary:disabled { opacity: .5; }
-  button.ghost { background: #fff; color: var(--canopy); border: 1px solid var(--canopy); border-radius: 6px; padding: 8px 12px; cursor: pointer; }
-  button.danger { background: var(--red); color: #fff; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; }
-  .err { color: var(--red); font-size: .85rem; min-height: 1.2em; margin-top: 8px; }
+  button.ghost { background: #fff; color: var(--canopy); border: 1px solid var(--canopy); border-radius: 8px; padding: 8px 12px; font: inherit; font-size: .9rem; cursor: pointer; }
+  button.danger { background: var(--red); color: #fff; border: none; border-radius: 8px; padding: 9px 14px; font: inherit; font-size: .9rem; font-weight: 600; cursor: pointer; }
   .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
-  .tabs button { flex: 1; padding: 10px; border: 1px solid var(--line); background: #fff; border-radius: 6px; cursor: pointer; font-weight: 600; }
+  .tabs button { flex: 1; padding: 11px; border: 1px solid var(--line); background: rgba(255, 255, 255, .92); border-radius: 8px; cursor: pointer; font: inherit; font-weight: 600; color: var(--ink); }
   .tabs button.on { background: var(--canopy); color: #fff; border-color: var(--canopy); }
   .filters { display: flex; gap: 8px; margin-bottom: 12px; }
+  .filters select { max-width: 130px; }
   .row { display: grid; grid-template-columns: 1.4fr 1.4fr 110px auto; gap: 8px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
   .row:first-child { border-top: none; }
   .name { font-weight: 600; font-size: .92rem; }
@@ -34,96 +130,251 @@
   .blocked-row { display: grid; grid-template-columns: 1.5fr 1.5fr auto; gap: 8px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
   .blocked-row.is-blocked .name { color: var(--red); }
   .actions { display: flex; gap: 6px; }
-  .toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: #222; color: #fff; padding: 9px 16px; border-radius: 20px; font-size: .85rem; opacity: 0; transition: opacity .25s; pointer-events: none; }
+  .toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: #222; color: #fff; padding: 9px 16px; border-radius: 20px; font-size: .85rem; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 50; }
   .toast.show { opacity: .95; }
+
+  @media (max-width: 960px) {
+    #login { grid-template-columns: 1fr; gap: 26px; padding: 34px 20px 46px; }
+    .lockup img { width: 84px; height: 84px; }
+    .wordmark b { font-size: 2.1rem; }
+    .wordmark .u { font-size: 1.25rem; }
+    .wordmark .c { font-size: .85rem; letter-spacing: .3em; }
+    .brand hr { margin: 22px 0 18px; }
+    .brand h2 { font-size: 1.4rem; }
+    .features { display: none; }
+    .login-card { padding: 32px 24px 36px; }
+    .ttl h1 { font-size: 1.6rem; }
+    .sub { margin-left: 24px; }
+    /* phones / tablets: keep just the four corners, smaller and mirrored */
+    .d3, .d6, .d4, .d8 { display: none; }
+    .d1 { top: -40px; right: -24px; width: 120px; height: 80px; }
+    .d7 { top: -40px; left: -24px; width: 120px; height: 80px; }
+    .d2 { bottom: -90px; right: -90px; width: 230px; height: 180px; }
+    .d5 { bottom: -90px; left: -90px; width: 230px; height: 180px; }
+  }
   @media (max-width: 640px) {
     .row, .blocked-row { grid-template-columns: 1fr; }
+    #who { display: none; }
   }
-  [hidden] { display: none !important; }
 </style>
 </head>
 <body>
-<header>
-  <h1>Campus Map Admin</h1>
-  <div><span id="who" style="font-size:.8rem;margin-right:8px"></span><button id="logout" hidden>Sign out</button></div>
+
+<!-- ================= SIGN IN ================= -->
+<div id="login">
+  <div class="deco d1"></div><div class="deco d2"></div><div class="deco d3"></div><div class="deco d4"></div>
+  <div class="deco d5"></div><div class="deco d6"></div><div class="deco d7"></div><div class="deco d8"></div>
+
+  <div class="brand">
+    <div class="lockup">
+      <img src="images/araullo-seal.png" alt="Araullo University seal">
+      <div class="wordmark">
+        <b>PHINMA</b>
+        <span class="u">Araullo University</span>
+        <span class="c">SOUTH CAMPUS</span>
+      </div>
+    </div>
+    <hr>
+    <h2>Campus Map Admin</h2>
+    <p>Secure Access for Authorized Personnel</p>
+    <div class="features">
+      <div class="feature">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>
+        <span>Manage<br>Campus Map</span>
+      </div>
+      <div class="feature">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/></svg>
+        <span>Secure<br>Access</span>
+      </div>
+      <div class="feature">
+        <svg class="ico" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.7 0 4.5 1.8 4.5 4.5"/></svg>
+        <span>Authorized<br>Personnel Only</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="login-card">
+    <div class="ttl"><i class="bar"></i><h1>Admin Sign In</h1></div>
+    <p class="sub">Access your account to manage the campus map system.</p>
+    <form id="login-form" onsubmit="return false">
+      <label for="email">
+        <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+        Email
+      </label>
+      <input id="email" type="email" placeholder="Enter your email address" autocomplete="username" required>
+
+      <label for="password">
+        <svg class="ico" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><circle cx="12" cy="16" r="1"/></svg>
+        Password
+      </label>
+      <div class="pw">
+        <input id="password" type="password" placeholder="Enter your password" autocomplete="current-password" required>
+        <button type="button" id="toggle-pw" aria-label="Show password">
+          <svg class="ico eye-closed" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M10.6 6.1A9.6 9.6 0 0 1 12 6c5 0 8.5 4 9.5 6a12 12 0 0 1-2.6 3.3M6.3 7.7C4.2 9.1 2.8 11 2.5 12c1 2 4.5 6 9.5 6 1.5 0 2.8-.4 4-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+          <svg class="ico eye-open" viewBox="0 0 24 24"><path d="M2.5 12C3.5 10 7 6 12 6s8.5 4 9.5 6c-1 2-4.5 6-9.5 6s-8.5-4-9.5-6z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+
+      <div class="err" id="login-err"></div>
+      <button class="signin" type="submit">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+        <span>Sign In</span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ================= ADMIN BOARD ================= -->
+<div class="watermark"></div>
+<div class="admin-deco a1"></div>
+<div class="admin-deco a2"></div>
+
+<header id="topbar" hidden>
+  <div class="brandbar">
+    <img src="images/araullo-seal.png" alt="">
+    <h1>Campus Map Admin</h1>
+  </div>
+  <div class="userbox">
+    <span id="who"></span>
+    <button id="logout">Sign out</button>
+  </div>
 </header>
 
-<main>
-  <!-- LOGIN -->
-  <section id="login" class="card">
-    <h2>Admin sign in</h2>
-    <form id="login-form">
-      <label>Email<input id="email" type="email" autocomplete="username" required></label>
-      <label>Password<input id="password" type="password" autocomplete="current-password" required></label>
-      <div class="err" id="login-err"></div>
-      <button class="primary" type="submit" style="width:100%;margin-top:6px">Sign in</button>
-    </form>
-  </section>
+<main id="app" hidden>
+  <div class="tabs">
+    <button id="tab-rooms" class="on">Rooms (hours &amp; status)</button>
+    <button id="tab-paths">Paths (block / unblock)</button>
+  </div>
 
-  <!-- APP -->
-  <section id="app" hidden>
-    <div class="tabs">
-      <button id="tab-rooms" class="on">Rooms (hours &amp; status)</button>
-      <button id="tab-paths">Paths (block / unblock)</button>
+  <div id="panel-rooms" class="card">
+    <div class="filters">
+      <input id="search" placeholder="Search rooms…">
+      <select id="floor">
+        <option value="">All floors</option>
+        <option value="1">Floor 1</option><option value="2">Floor 2</option>
+        <option value="3">Floor 3</option><option value="4">Floor 4</option>
+      </select>
     </div>
+    <div id="rooms-list"></div>
+  </div>
 
-    <div id="panel-rooms" class="card">
-      <div class="filters">
-        <input id="search" placeholder="Search rooms…">
-        <select id="floor" style="max-width:130px">
-          <option value="">All floors</option>
-          <option value="1">Floor 1</option><option value="2">Floor 2</option>
-          <option value="3">Floor 3</option><option value="4">Floor 4</option>
-        </select>
-      </div>
-      <div id="rooms-list"></div>
-    </div>
-
-    <div id="panel-paths" class="card" hidden>
-      <p style="margin-top:0;font-size:.85rem;color:var(--soft)">
-        Blocking a path makes the map avoid it. Visitors get a detour if one exists, or a "no route available" message if not.
-      </p>
-      <div id="blocks-list"></div>
-    </div>
-  </section>
+  <div id="panel-paths" class="card" hidden>
+    <p style="margin-top:0;font-size:.85rem;color:var(--soft)">
+      Blocking a path makes the map avoid it. Visitors get a detour if one exists, or a "no route available" message if not.
+    </p>
+    <div id="blocks-list"></div>
+  </div>
 </main>
+
 <div class="toast" id="toast"></div>
 
-<script type="module">
-import { firebaseConfig } from './firebase-config.js';
-import { ROOM_LIST, BLOCK_LIST } from './room-list.js';
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+<!-- Safety net: if the main script below never starts, say so instead of doing nothing. -->
+<script>
+  (function () {
+    var err = document.getElementById('login-err');
+    if (location.protocol === 'file:') {
+      err.textContent = 'This page was opened as a file. Browsers block the scripts it needs that way. Open it through a web server or your hosting (for example VS Code Live Server, or upload it to your site) and try again.';
+      return;
+    }
+    setTimeout(function () {
+      if (!window.__adminBooted && !err.textContent) {
+        err.textContent = 'The admin script did not start. Open the browser console (F12) to see why. Check that firebase-config.js and room-list.js are in the same folder as admin.html.';
+      }
+    }, 3000);
+  })();
+</script>
 
+<script type="module">
 const $ = (id) => document.getElementById(id);
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const showErr = (msg) => { $('login-err').textContent = msg; };
+
+// Load everything inside try/catch so any problem is shown on screen
+let firebaseConfig, ROOM_LIST, BLOCK_LIST;
+let initializeApp, getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged;
+let getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc;
+try {
+  ({ firebaseConfig } = await import('./firebase-config.js'));
+  ({ ROOM_LIST, BLOCK_LIST } = await import('./room-list.js'));
+  ({ initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'));
+  ({ getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js'));
+  ({ getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js'));
+} catch (e) {
+  showErr('Could not load a required file: ' + (e && e.message ? e.message : e) + '. Make sure firebase-config.js and room-list.js are next to admin.html, and that you are online.');
+  window.__adminBooted = true;
+  throw e;
+}
+
+// firebase-config.js still has the PASTE_... placeholders -> sign in can never work
+if (!firebaseConfig || !firebaseConfig.apiKey || String(firebaseConfig.apiKey).startsWith('PASTE')) {
+  showErr('firebase-config.js is not filled in yet. Paste your real Firebase web-app settings (apiKey, authDomain, projectId, appId) into it, then reload this page.');
+  window.__adminBooted = true;
+  throw new Error('firebase-config.js not configured');
+}
+
+let app, auth, db;
+try {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+} catch (e) {
+  showErr('Firebase could not start: ' + (e && e.message ? e.message : e));
+  window.__adminBooted = true;
+  throw e;
+}
+window.__adminBooted = true;
 
 function toast(msg) {
   const t = $('toast'); t.textContent = msg; t.classList.add('show');
   clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
+/* ---------- Show / hide password ---------- */
+$('toggle-pw').addEventListener('click', () => {
+  const pw = $('password');
+  const show = pw.type === 'password';
+  pw.type = show ? 'text' : 'password';
+  $('toggle-pw').classList.toggle('on', show);
+  $('toggle-pw').setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+});
+
 /* ---------- Sign in / out ---------- */
 $('login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  $('login-err').textContent = '';
+  const btn = e.target.querySelector('button[type="submit"]');
+  const label = btn.querySelector('span');
+  showErr('');
+  btn.disabled = true; label.textContent = 'Signing in…';
   try {
     await signInWithEmailAndPassword(auth, $('email').value.trim(), $('password').value);
   } catch (err) {
-    $('login-err').textContent = 'Sign in failed. Check your email and password.';
+    const code = (err && err.code) || '';
+    const reasons = {
+      'auth/invalid-credential': 'Wrong email or password, or this admin account has not been created in Firebase yet (Authentication > Users > Add user).',
+      'auth/invalid-login-credentials': 'Wrong email or password, or this admin account has not been created in Firebase yet (Authentication > Users > Add user).',
+      'auth/user-not-found': 'No admin account with that email. Add it in Firebase > Authentication > Users.',
+      'auth/wrong-password': 'Wrong password.',
+      'auth/invalid-email': 'That email address is not valid.',
+      'auth/operation-not-allowed': 'Email/Password sign-in is turned off. In Firebase go to Authentication > Sign-in method and enable Email/Password.',
+      'auth/invalid-api-key': 'The apiKey in firebase-config.js is wrong. Copy it again from Firebase project settings.',
+      'auth/api-key-not-valid': 'The apiKey in firebase-config.js is wrong. Copy it again from Firebase project settings.',
+      'auth/unauthorized-domain': 'This website address is not allowed. In Firebase go to Authentication > Settings > Authorized domains and add it.',
+      'auth/network-request-failed': 'Could not reach Firebase. Check your internet connection.',
+      'auth/too-many-requests': 'Too many attempts. Wait a few minutes and try again.'
+    };
+    showErr((reasons[code] || 'Sign in failed.') + (code ? ' (' + code + ')' : ''));
   }
+  btn.disabled = false; label.textContent = 'Sign In';
 });
 $('logout').addEventListener('click', () => signOut(auth));
 
 let started = false;
 onAuthStateChanged(auth, (user) => {
   $('login').hidden = !!user;
+  $('topbar').hidden = !user;
   $('app').hidden = !user;
-  $('logout').hidden = !user;
+  document.body.classList.toggle('in-admin', !!user);   // shows the seal watermark + corner shapes
   $('who').textContent = user ? user.email : '';
+  if (!user) { $('password').value = ''; }
   if (user && !started) { started = true; buildRooms(); buildBlocks(); listen(); }
 });
 
