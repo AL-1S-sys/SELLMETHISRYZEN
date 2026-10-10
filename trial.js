@@ -196,11 +196,11 @@ const floorPlans = {
       { id: 'l1_wing_left_b',  name: 'Faculty Room B', desc: 'Additional faculty desks opening onto the courtyard.', hours: '8:00 AM - 5:00 PM', status: 'Open',
         x: FAC_X, d: FAC_D },
       // Right wing is split into 3 narrower rooms (same positions as Layer 3's right wing).
-      { id: 'l1_wing_right_a', name: 'CELA DEPARTMENT', desc: 'cas department.', hours: '8:00 AM - 4:30 PM', status: 'Open',
+      { id: 'l1_wing_right_a', name: 'CAS DEPARMENT', desc: 'cas department.', hours: '8:00 AM - 4:30 PM', status: 'Open',
         x: 8.6, z: -1.85, w: 3.3, d: WING_D },
-      { id: 'l1_wing_right_b', name: 'CMA DEPARTMENT', desc: 'cas department.', hours: '8:00 AM - 4:30 PM', status: 'Open',
+      { id: 'l1_wing_right_b', name: 'CELA DEPARTMENT', desc: 'cela department.', hours: '8:00 AM - 4:30 PM', status: 'Open',
         x: 8.6, z:  1.6,  w: 3.3, d: WING_D },
-      { id: 'l1_wing_right_c', name: 'NEW DEPARTMENT', desc: 'Department office.', hours: '8:00 AM - 4:30 PM', status: 'Open',
+      { id: 'l1_wing_right_c', name: 'CMA DEPARMENT', desc: 'cma office.', hours: '8:00 AM - 4:30 PM', status: 'Open',
         x: 8.6, z:  5.05, w: 3.3, d: WING_D },
       // Long narrow room BEHIND Faculty Room A + B, now INSIDE the floor slab.
       // rot = PI turns its window side toward the back (-Z), which is the
