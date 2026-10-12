@@ -18,7 +18,7 @@ export const ROOM_LIST = [
   },
   {
     "id": "l1_wing_right_a",
-    "name": "CELA DEPARTMENT",
+    "name": "CAS/CMA DEPARTMENT",
     "layer": 1,
     "hours": "8:00 AM - 4:30 PM",
     "status": "Open",
@@ -26,19 +26,11 @@ export const ROOM_LIST = [
   },
   {
     "id": "l1_wing_right_b",
-    "name": "CMA DEPARTMENT",
+    "name": "CELA/CCJE DEPARTMENT",
     "layer": 1,
     "hours": "8:00 AM - 4:30 PM",
     "status": "Open",
     "desc": "cas department."
-  },
-  {
-    "id": "l1_wing_right_c",
-    "name": "NEW DEPARTMENT",
-    "layer": 1,
-    "hours": "8:00 AM - 4:30 PM",
-    "status": "Open",
-    "desc": "Department office."
   },
   {
     "id": "l1_faculty_annex",
