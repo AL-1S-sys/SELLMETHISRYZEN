@@ -196,12 +196,9 @@ const floorPlans = {
       { id: 'l1_wing_left_b',  name: 'Faculty Room B', desc: 'Additional faculty desks opening onto the courtyard.', hours: '8:00 AM - 5:00 PM', status: 'Open',
         x: FAC_X, d: FAC_D },
       // Right wing is split into 3 narrower rooms (same positions as Layer 3's right wing).
-      { id: 'l1_wing_right_a', name: 'CAS DEPARMENT', desc: 'cas department.', hours: '8:00 AM - 4:30 PM', status: 'Open',
-        x: 8.6, z: -1.85, w: 3.3, d: WING_D },
-      { id: 'l1_wing_right_b', name: 'CELA DEPARTMENT', desc: 'cela department.', hours: '8:00 AM - 4:30 PM', status: 'Open',
-        x: 8.6, z:  1.6,  w: 3.3, d: WING_D },
-      { id: 'l1_wing_right_c', name: 'CMA DEPARMENT', desc: 'cma office.', hours: '8:00 AM - 4:30 PM', status: 'Open',
-        x: 8.6, z:  5.05, w: 3.3, d: WING_D },
+            // Right wing now matches Layer 2: two rooms using the default wing slots.
+      { id: 'l1_wing_right_a', name: 'CAS/CMA DEPARTMENT',  desc: 'CAS and CMA departments.',  hours: '8:00 AM - 4:30 PM', status: 'Open' },
+      { id: 'l1_wing_right_b', name: 'CELA/CCJE DEPARTMENT', desc: 'CELA and CJE departments.', hours: '8:00 AM - 4:30 PM', status: 'Open' },
       // Long narrow room BEHIND Faculty Room A + B, now INSIDE the floor slab.
       // rot = PI turns its window side toward the back (-Z), which is the
       // side the Main Lobby is on. Rename / edit the text to the real room.
@@ -431,7 +428,37 @@ controls.mouseButtons = {
 };
 controls.rotateSpeed = 0.7;
 controls.panSpeed = 0.7;
-controls.zoomSpeed = 0.8;
+
+// Tune the scroll-wheel / pinch zoom sensitivity.
+// Lower values make the camera zoom slower; higher values make it snappier.
+const ZOOM_SPEED = 0.8;
+controls.zoomSpeed = ZOOM_SPEED;
+// ---- Smooth wheel zoom ----
+// OrbitControls zooms in hard steps. We intercept the wheel, set a goal
+// distance, and animate() eases the camera toward it every frame.
+let zoomGoal = null;                 // goal distance from the target (null = not zooming)
+const ZOOM_SENSITIVITY = 0.0012;     // higher = faster zoom per scroll
+const ZOOM_EASE = 0.12;              // 0.05 = very floaty, 0.25 = snappy
+
+document.body.addEventListener('wheel', (e) => {
+  if (e.target !== renderer.domElement) return;   // ignore scrolling over panels
+  e.preventDefault();
+  e.stopPropagation();                            // stop OrbitControls' own stepped zoom
+
+  isTransitioning = false;                        // user took over from any fly-to
+  let dy = e.deltaY * (e.deltaMode === 1 ? 16 : 1);   // normalise "lines" to pixels
+  dy = Math.max(-120, Math.min(120, dy));             // tame huge mouse-wheel notches
+
+  const cur = camera.position.distanceTo(controls.target);
+  const base = zoomGoal !== null ? zoomGoal : cur;
+  zoomGoal = THREE.MathUtils.clamp(
+    base * Math.exp(dy * ZOOM_SENSITIVITY),
+    controls.minDistance, controls.maxDistance
+  );
+}, { capture: true, passive: false });
+
+// Rotating / pinching / flying cancels any pending wheel zoom
+controls.addEventListener('start', () => { zoomGoal = null; });
 
 // Fly-to animation state: the camera slowly slides toward these targets.
 const targetCamPos = new THREE.Vector3().copy(wideCamPos);
@@ -1846,14 +1873,27 @@ function animate() {
   requestAnimationFrame(animate);   // schedule the next frame
 
   // Fly-to: slide 5% of the remaining distance each frame (ease-out feel)
+    // Ease the camera toward the wheel-zoom goal
+    // Fly-to (original, unchanged)
   if (isTransitioning) {
     camera.position.lerp(targetCamPos, 0.05);
     controls.target.lerp(targetLookAt, 0.05);
-    // Stop once we're close enough
     if (camera.position.distanceTo(targetCamPos) < 0.05 && controls.target.distanceTo(targetLookAt) < 0.05) {
       isTransitioning = false;
     }
   }
+
+  // Wheel-zoom easing (new)
+  if (isTransitioning) {
+    zoomGoal = null;
+  } else if (zoomGoal !== null) {
+    const offset = camera.position.clone().sub(controls.target);
+    const dist = offset.length();
+    const next = dist + (zoomGoal - dist) * ZOOM_EASE;
+    camera.position.copy(controls.target).add(offset.setLength(next));
+    if (Math.abs(zoomGoal - next) < 0.01) zoomGoal = null;
+  }
+
 
   if (userPin && userPin.visible) userPin.rotation.y += 0.03;   // spin the pin
   updateRoute(performance.now() / 1000);                        // animate the route dots (time in seconds)
